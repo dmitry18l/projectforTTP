@@ -1,28 +1,23 @@
-from matrix_input import input_matrix
 from matrix_generate import generate_matrix
 from matrix_rotate import rotate_matrix
 
 def main():
     """
-    Главная функция для тестирования трёх пунктов:
-    1) Ручной ввод матрицы
-    2) Генерация случайной матрицы
-    3) Поворот матрицы на 90 градусов
+    Тестирование функции поворота матрицы (итерация 3)
     """
-    
-    # === Пункт 1 и 2 ===
-    # Генерируем матрицу для теста поворота
+    # Генерация случайной матрицы для проверки
     n = 3
     m = 4
-    matrix = generate_matrix(n, m)  # Генерация случайной матрицы
+    matrix = generate_matrix(n, m)
+    
     print("Исходная матрица:")
     for row in matrix:
         print(row)
 
-    # === Пункт 3 ===
-    # Запрашиваем направление поворота у пользователя
+    # Поворот матрицы
     direction = input("Введите направление поворота ('clockwise' или 'counterclockwise'): ")
-    rotated = rotate_matrix(matrix, direction)  # Поворот матрицы
+    rotated = rotate_matrix(matrix, direction)
+    
     print("Повернутая матрица:")
     for row in rotated:
         print(row)
