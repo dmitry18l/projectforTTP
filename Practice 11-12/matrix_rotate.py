@@ -1,16 +1,26 @@
-def rotate_matrix(matrix, direction='clockwise'):
-    """
-    Поворачивает матрицу на 90 градусов.
-    direction: 'clockwise' или 'counterclockwise'
-    """
-    if not matrix or not matrix[0]:
-        return []
+import logging
 
-    if direction == 'clockwise':
-        # Поворот по часовой стрелке
-        return [list(reversed(col)) for col in zip(*matrix)]
-    elif direction == 'counterclockwise':
-        # Поворот против часовой стрелки
-        return [list(col) for col in reversed(list(zip(*matrix)))]
-    else:
-        raise ValueError("direction должен быть 'clockwise' или 'counterclockwise'")
+def rotate_matrix(matrix, direction):
+    """
+    Поворот матрицы с обработкой ошибок.
+    """
+    try:
+        logging.info(f"Функция rotate_matrix(direction={direction}) вызвана")
+
+        if not matrix:
+            raise ValueError("Матрица пуста — нечего поворачивать")
+
+        if direction == "clockwise":
+            rotated = [list(row) for row in zip(*matrix[::-1])]
+        elif direction == "counterclockwise":
+            rotated = [list(row) for row in zip(*matrix)][::-1]
+        else:
+            raise ValueError("Некорректное направление поворота. Используйте 'clockwise' или 'counterclockwise'.")
+
+        logging.info("Функция rotate_matrix() завершила выполнение")
+        return rotated
+
+    except Exception as e:
+        logging.error(f"Ошибка в rotate_matrix: {e}")
+        print(f"Ошибка при повороте матрицы: {e}")
+        return None
