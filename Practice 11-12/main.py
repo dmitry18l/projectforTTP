@@ -6,89 +6,90 @@ from matrix_rotate import rotate_matrix
 # Настройка логирования
 logging.basicConfig(
     filename="app.log",
-    level=logging.INFO,  # Можно поменять на CRITICAL, чтобы отключить логирование
+    level=logging.INFO,  # можно изменить на CRITICAL, чтобы отключить логирование
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-
 def menu():
-    """Главное меню приложения."""
+    """
+    Функция отображения меню
+    """
     print("\n=== Главное меню ===")
-    print("1. Ввод матрицы вручную")
+    print("1. Ручной ввод матрицы")
     print("2. Генерация случайной матрицы")
     print("3. Поворот матрицы")
     print("4. Вывод результата")
-    print("5. Завершение программы")
-
-
-def print_matrix(matrix, title="Матрица"):
-    """Красивый вывод матрицы."""
-    print(f"\n=== {title} ===")
-    for row in matrix:
-        print(" ".join(map(str, row)))
-
+    print("5. Выход")
 
 def main():
-    """Финальная программа с логированием."""
+    """
+    Главная функция консольного приложения
+    """
     data = None
     result = None
 
     logging.info("Программа запущена")
 
     while True:
-        menu()
-        choice = input("Выберите пункт меню (1–5): ").strip()
-        logging.info(f"Пользователь выбрал пункт меню: {choice}")
+        try:
+            menu()
+            choice = input("Выберите пункт меню: ").strip()
+            logging.info(f"Пользователь выбрал пункт меню: {choice}")
 
-        if choice == "1":
-            data = input_matrix()
-            result = None
-            print_matrix(data, "Введённая матрица")
-            logging.info("Вызвана функция input_matrix()")
+            if choice == '1':
+                data = input_matrix()
+                result = None  # сброс результата при новом вводе
 
-        elif choice == "2":
-            try:
-                n = int(input("Введите количество строк: "))
-                m = int(input("Введите количество столбцов: "))
-                data = generate_matrix(n, m)
-                result = None
-                print_matrix(data, "Сгенерированная матрица")
-                logging.info(f"Вызвана функция generate_matrix({n}, {m})")
-            except ValueError:
-                print("Ошибка: размеры должны быть целыми числами.")
-                logging.warning("Ошибка при вводе размеров матрицы")
+            elif choice == '2':
+                try:
+                    n = int(input("Введите количество строк: "))
+                    m = int(input("Введите количество столбцов: "))
+                    data = generate_matrix(n, m)
+                    result = None
+                    print("Сгенерированная матрица:")
+                    for row in data:
+                        print(row)
+                except ValueError as e:
+                    logging.error(f"Ошибка при вводе размеров: {e}")
+                    print("Ошибка! Введите целые числа.")
 
-        elif choice == "3":
-            if data is None:
-                print("Ошибка: сначала введите или сгенерируйте матрицу!")
-                logging.warning("Попытка поворота без данных")
-            else:
-                direction = input("Введите направление ('clockwise' или 'counterclockwise'): ").strip().lower()
-                if direction not in ("clockwise", "counterclockwise"):
-                    print("Ошибка: допустимые значения — 'clockwise' или 'counterclockwise'.")
-                    logging.warning("Неверное направление поворота")
+            elif choice == '3':
+                if data is None:
+                    print("Сначала введите или сгенерируйте матрицу!")
+                    logging.warning("Попытка поворота без данных")
                 else:
+                    direction = input("Введите направление поворота ('clockwise' или 'counterclockwise'): ").strip()
                     result = rotate_matrix(data, direction)
-                    print_matrix(result, "Повернутая матрица")
-                    logging.info(f"Вызвана функция rotate_matrix(direction={direction})")
+                    if result:
+                        print("Повернутая матрица:")
+                        for row in result:
+                            print(row)
 
-        elif choice == "4":
-            if result is None:
-                print("Ошибка: результат отсутствует. Сначала выполните алгоритм.")
-                logging.warning("Попытка вывода результата без выполнения алгоритма")
+            elif choice == '4':
+                if result is None:
+                    print("Сначала выполните алгоритм!")
+                    logging.warning("Попытка вывода без результата")
+                else:
+                    print("Результат выполнения алгоритма:")
+                    for row in result:
+                        print(row)
+
+            elif choice == '5':
+                print("Выход из программы.")
+                logging.info("Пользователь завершил программу.")
+                break
+
             else:
-                print_matrix(result, "Результат")
-                logging.info("Результат успешно выведен пользователю")
+                print("Неверный выбор. Попробуйте снова.")
+                logging.warning(f"Некорректный ввод пункта меню: {choice}")
 
-        elif choice == "5":
-            print("Программа завершена.")
-            logging.info("Программа завершена пользователем")
-            break
-
-        else:
-            print("Ошибка: выберите пункт от 1 до 5.")
-            logging.warning(f"Введён некорректный пункт меню: {choice}")
-
+        except Exception as e:
+            logging.error(f"Необработанная ошибка в main: {e}")
+            print(f"Произошла ошибка: {e}")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nПрограмма прервана пользователем.")
+        logging.critical("Программа прервана пользователем (Ctrl+C).")
