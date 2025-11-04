@@ -1,40 +1,60 @@
 import logging
 import time
 import random
-from matrix_input import input_matrix
-from matrix_generate import generate_matrix
-from matrix_rotate import rotate_matrix
+from matrix_operations import generate_matrix, rotate_matrix, input_matrix
+from exceptions import NoDataError, NoResultError, InvalidInputError
 
-# Настройка логирования сервера
+# Настройка логирования
 logging.basicConfig(
     filename="server.log",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-class Server:
-    """Эмуляция сервера для обработки запросов"""
+def handle_client_request(client_name, action, **kwargs):
+    """
+    Обрабатывает запрос клиента.
 
-    def process_input_matrix(self, client_name):
-        logging.info(f"{client_name}: запрошен ввод матрицы")
-        print(f"{client_name}: запрошен ввод матрицы")
-        data = input_matrix()
-        time.sleep(random.uniform(0.5, 2))  # имитация долгой операции
-        logging.info(f"{client_name}: матрица введена вручную")
-        return data
+    Args:
+        client_name (str): имя клиента
+        action (str): действие ('input', 'generate', 'rotate')
+        kwargs: дополнительные параметры для действия
 
-    def process_generate_matrix(self, client_name, n, m):
-        logging.info(f"{client_name}: запрошена генерация матрицы {n}x{m}")
-        print(f"{client_name}: запрошена генерация матрицы {n}x{m}")
-        data = generate_matrix(n, m)
-        time.sleep(random.uniform(0.5, 2))
-        logging.info(f"{client_name}: матрица сгенерирована")
-        return data
+    Returns:
+        list: результат действия (матрица или повернутая матрица)
+    """
+    try:
+        logging.info(f"{client_name}: отправлен запрос '{action}'")
+        time.sleep(random.uniform(0.5, 1.5))  # эмуляция длительных расчетов
 
-    def process_rotate_matrix(self, client_name, data, direction):
-        logging.info(f"{client_name}: запрошен поворот матрицы {direction}")
-        print(f"{client_name}: запрошен поворот матрицы {direction}")
-        result = rotate_matrix(data, direction)
-        time.sleep(random.uniform(0.5, 2))
-        logging.info(f"{client_name}: матрица повернута")
-        return result
+        if action == "input":
+            matrix = input_matrix()
+            logging.info(f"{client_name}: матрица введена вручную")
+            return matrix
+
+        elif action == "generate":
+            n = kwargs.get("n")
+            m = kwargs.get("m")
+            if n is None or m is None:
+                raise InvalidInputError("Не указаны размеры матрицы для генерации")
+            matrix = generate_matrix(n, m)
+            logging.info(f"{client_name}: сгенерирована матрица {n}x{m}")
+            return matrix
+
+        elif action == "rotate":
+            matrix = kwargs.get("matrix")
+            direction = kwargs.get("direction")
+            if matrix is None:
+                raise NoDataError("Матрица не задана для поворота")
+            if direction not in ('clockwise', 'counterclockwise'):
+                raise InvalidInputError("Неверное направление поворота")
+            rotated = rotate_matrix(matrix, direction)
+            logging.info(f"{client_name}: матрица повернута {direction}")
+            return rotated
+
+        else:
+            raise InvalidInputError(f"Неизвестное действие: {action}")
+
+    except Exception as e:
+        logging.error(f"{client_name}: ошибка при обработке запроса '{action}': {e}")
+        raise
