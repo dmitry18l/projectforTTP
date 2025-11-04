@@ -1,7 +1,9 @@
 import logging
 import time
 import random
-from matrix_operations import generate_matrix, rotate_matrix, input_matrix
+from matrix_input import input_matrix
+from matrix_generate import generate_matrix
+from matrix_rotate import rotate_matrix
 from exceptions import NoDataError, NoResultError, InvalidInputError
 
 # Настройка логирования
