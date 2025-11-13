@@ -1,18 +1,33 @@
+import logging
+
 def input_matrix():
     """
-    Ввод матрицы пользователем вручную.
-    Пользователь вводит размеры N и M, затем элементы построчно.
-    Возвращает матрицу (список списков).
+    Ручной ввод матрицы пользователем с обработкой ошибок.
     """
-    n = int(input("Введите количество строк (N): "))
-    m = int(input("Введите количество столбцов (M): "))
+    try:
+        logging.info("Функция input_matrix() вызвана")
+        n = int(input("Введите количество строк: "))
+        m = int(input("Введите количество столбцов: "))
 
-    matrix = []
-    print("Введите элементы матрицы построчно:")
-    for i in range(n):
-        row = list(map(int, input(f"Строка {i + 1}: ").split()))
-        while len(row) != m:
-            print(f"Ошибка: должно быть {m} элементов!")
-            row = list(map(int, input(f"Строка {i + 1}: ").split()))
-        matrix.append(row)
-    return matrix
+        if n <= 0 or m <= 0:
+            raise ValueError("Размеры матрицы должны быть положительными числами")
+
+        matrix = []
+        for i in range(n):
+            try:
+                row = list(map(int, input(f"Введите {m} чисел через пробел для строки {i+1}: ").split()))
+                if len(row) != m:
+                    raise ValueError("Количество элементов не совпадает с числом столбцов")
+                matrix.append(row)
+            except ValueError as e:
+                logging.error(f"Ошибка ввода строки {i+1}: {e}")
+                print("Ошибка ввода! Повторите попытку.")
+                return input_matrix()  # повторный ввод
+
+        logging.info("Функция input_matrix() завершила ввод матрицы")
+        return matrix
+
+    except ValueError as e:
+        logging.error(f"Ошибка при вводе размеров матрицы: {e}")
+        print("Ошибка ввода! Попробуйте снова.")
+        return input_matrix()
