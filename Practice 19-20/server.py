@@ -35,7 +35,7 @@ class MatrixServer:
         
         # Настройка логирования
         logging.basicConfig(
-            filename="server.log",
+            filename="Practice 19-20/server.log",
             level=logging.INFO,
             format="%(asctime)s - %(levelname)s - %(message)s",
             encoding='utf-8'
@@ -61,31 +61,31 @@ class MatrixServer:
             direction = request.get('direction')
             
             # Логирование начала обработки с деталями запроса
-            logging.info(f"Клиент {client_name}: получен запрос на операцию '{operation}'")
-            logging.info(f"Клиент {client_name}: направление поворота - {direction}")
-            logging.info(f"Клиент {client_name}: размер матрицы - {len(matrix)}x{len(matrix[0])}")
+            logging.info(f"Сервер {client_name}: получен запрос на операцию '{operation}'")
+            logging.info(f"Сервер {client_name}: направление поворота - {direction}")
+            logging.info(f"Сервер {client_name}: размер матрицы - {len(matrix)}x{len(matrix[0])}")
             
             print(f"{time.strftime('%H:%M:%S')} {client_name}: получен запрос на поворот матрицы")
             
             # Эмуляция длительных вычислений (2-5 секунд)
             processing_time = random.uniform(2, 5)
-            logging.info(f"Клиент {client_name}: эмуляция вычислений {processing_time:.2f} сек")
+            logging.info(f"Сервер {client_name}: эмуляция вычислений {processing_time:.2f} сек")
             time.sleep(processing_time)  # I/O операция - GIL освобождается
             
             if operation == 'rotate':
                 # Валидация входных данных
                 if not matrix:
                     error_msg = "Матрица не предоставлена"
-                    logging.error(f"Клиент {client_name}: {error_msg}")
+                    logging.error(f"Сервер {client_name}: {error_msg}")
                     return {'error': error_msg}
                 
                 if direction not in ['clockwise', 'counterclockwise']:
                     error_msg = f"Неверное направление поворота: {direction}"
-                    logging.error(f"Клиент {client_name}: {error_msg}")
+                    logging.error(f"Сервер {client_name}: {error_msg}")
                     return {'error': error_msg}
                 
                 # Логирование перед выполнением операции
-                logging.info(f"Клиент {client_name}: выполнение операции поворота")
+                logging.info(f"Сервер {client_name}: выполнение операции поворота")
                 
                 # Выполнение матричной операции
                 result = rotate_matrix(matrix, direction)
@@ -95,24 +95,24 @@ class MatrixServer:
                     self.requests_processed += 1
                 
                 # Логирование успешного завершения с деталями
-                logging.info(f"Клиент {client_name}: операция поворота завершена успешно")
-                logging.info(f"Клиент {client_name}: размер результата - {len(result)}x{len(result[0])}")
-                logging.info(f"Клиент {client_name}: общее время обработки - {processing_time:.2f} сек")
-                logging.info(f"Клиент {client_name}: всего обработано запросов - {self.requests_processed}")
+                logging.info(f"Сервер {client_name}: операция поворота завершена успешно")
+                logging.info(f"Сервер {client_name}: размер результата - {len(result)}x{len(result[0])}")
+                logging.info(f"Сервер {client_name}: общее время обработки - {processing_time:.2f} сек")
+                logging.info(f"Сервер {client_name}: всего обработано запросов - {self.requests_processed}")
                 
                 print(f"{time.strftime('%H:%M:%S')} {client_name}: выполнен поворот матрицы")
                 
                 return {'result': result}
             else:
                 error_msg = f'Неподдерживаемая операция: {operation}'
-                logging.error(f"Клиент {client_name}: {error_msg}")
+                logging.error(f"Сервер {client_name}: {error_msg}")
                 return {'error': error_msg}
                 
         except Exception as e:
             # Обработка и логирование непредвиденных ошибок
             error_msg = f"Ошибка выполнения операции: {e}"
-            logging.error(f"Клиент {client_name}: {error_msg}")
-            logging.exception(f"Клиент {client_name}: детали исключения")  # Добавляет traceback
+            logging.error(f"Сервер {client_name}: {error_msg}")
+            logging.exception(f"Сервер {client_name}: детали исключения")  # Добавляет traceback
             return {'error': error_msg}
 
 
